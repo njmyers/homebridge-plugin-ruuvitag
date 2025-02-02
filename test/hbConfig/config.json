@@ -7,7 +7,7 @@
   },
   "description": "HomeBridge HTTP Status Control",
   "plugins": [
-    "homebridge-plugin-name",
+    "@njmyers/homebridge-plugin-ruuvitag-v2",
     "homebridge-config-ui-x"
   ],
   "platforms": [
@@ -23,8 +23,32 @@
       "debug": false
     },
     {
-      "name": "homebridge-plugin-name",
-      "platform": "ExampleHomebridgePlugin"
+      "name": "@njmyers/homebridge-plugin-ruuvitag-v2",
+      "platform": "RuuvitagPlatform",
+      "accessories": [
+        {
+          "name": "Living Room Ruuvitag",
+          "id": "fb168c3611eb",
+          "motion": {
+            "threshold": 0.1,
+            "name": "Wake Up"
+          },
+          "alerts": [
+            {
+              "type": "temperature",
+              "threshold": 30,
+              "operator": ">",
+              "name": "High Temperature"
+            },
+            {
+              "type": "temperature",
+              "threshold": 10,
+              "operator": "<",
+              "name": "Low Temperature"
+            }
+          ]
+        }
+      ]
     }
   ],
   "accessories": []

@@ -1,19 +1,19 @@
 {
-  "name": "homebridge-plugin-name",
-  "displayName": "Plugin Name",
+  "name": "@njmyers/homebridge-plugin-ruuvitag",
+  "displayName": "Ruuvitag Plugin",
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "description": "A short description about what your plugin does.",
+  "description": "A revamp of the Ruuvitag plugin for Homebridge",
   "author": "Your Name",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/USERNAME/GITHUB_PROJECT_NAME#readme",
+  "homepage": "https://github.com/njmyers/homebridge-plugin-ruuvitag#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "https://github.com/njmyers/homebridge-plugin-ruuvitag.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/njmyers/homebridge-plugin-ruuvitag/issues"
   },
   "keywords": [
     "homebridge-plugin"
@@ -42,6 +42,8 @@
     "typescript-eslint": "^8.12.2"
   },
   "dependencies": {
-    "homebridge-lib": "^7.1.0"
+    "@abandonware/noble": "npm:@stoprocent/noble@^1.18.2",
+    "homebridge-lib": "^7.1.0",
+    "node-ruuvitag": "^5.1.0"
   }
 }

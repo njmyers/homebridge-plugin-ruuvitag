@@ -1,8 +1,8 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "RuuvitagPlatform",
   "pluginType": "platform",
   "singular": true,
-  "strictValidation": false,
+  "strictValidation": true,
   "schema": {
     "type": "object",
     "properties": {
@@ -11,6 +11,80 @@
         "type": "string",
         "required": true,
         "default": "Example Dynamic Platform"
+      },
+      "accessories": {
+        "title": "Accessories",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "required": true,
+              "default": "Example Ruuvitag Name"
+            },
+            "id": {
+              "title": "ID",
+              "type": "string",
+              "required": true,
+              "default": "fb168c3611eb"
+            },
+            "motion": {
+              "title": "Motion",
+              "type": "object",
+              "properties": {
+                "threshold": {
+                  "title": "Threshold",
+                  "type": "number",
+                  "required": true,
+                  "default": 0.1
+                },
+                "name": {
+                  "title": "Name",
+                  "type": "string",
+                  "required": true,
+                  "default": "Wake Up"
+                }
+              }
+            },
+            "alerts": {
+              "title": "Alerts",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "title": "Type",
+                    "type": "string",
+                    "enum": ["temperature", "humidity", "pressure", "battery"],
+                    "required": true,
+                    "default": "temperature"
+                  },
+                  "threshold": {
+                    "title": "Threshold",
+                    "type": "number",
+                    "required": true,
+                    "default": 20
+                  },
+                  "operator": {
+                    "title": "Operator",
+                    "type": "string",
+                    "enum": [">", "<"],
+                    "required": true,
+                    "default": "<"
+                  },
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "required": true,
+                    "default": "High Temperature"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
