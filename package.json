@@ -2,8 +2,7 @@
   "name": "@njmyers/homebridge-plugin-ruuvitag",
   "displayName": "Ruuvitag Plugin",
   "type": "module",
-  "version": "1.0.0",
-  "private": true,
+  "version": "1.0.1-beta.0",
   "description": "A revamp of the Ruuvitag plugin for Homebridge",
   "author": "Your Name",
   "license": "Apache-2.0",
@@ -19,6 +18,9 @@
     "homebridge-plugin"
   ],
   "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": "^18.20.4 || ^20.18.0 || ^22.10.0",
     "homebridge": "^1.8.0 || ^2.0.0-beta.0"
