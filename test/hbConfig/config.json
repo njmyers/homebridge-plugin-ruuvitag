@@ -45,6 +45,10 @@
               "threshold": 10,
               "operator": "<",
               "name": "Low Temperature"
+            },
+            {
+              "type": "motion",
+              "threshold": 0.1
             }
           ]
         }

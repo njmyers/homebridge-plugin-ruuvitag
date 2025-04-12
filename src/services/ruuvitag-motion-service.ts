@@ -34,22 +34,12 @@ export class RuuvitagMotionService implements RuuvitagService {
     const deltaX = this.accelerationX ? this.accelerationX - accelerationX : 0;
     const deltaY = this.accelerationY ? this.accelerationY - accelerationY : 0;
     const deltaZ = this.accelerationZ ? this.accelerationZ - accelerationZ : 0;
-    const movement = this.movement !== null
-      ? RuuvitagMotionService.hypotenuse(deltaX, deltaY, deltaZ) / 1000
-      : 0;
+    const movement =
+      this.movement !== null
+        ? RuuvitagMotionService.hypotenuse(deltaX, deltaY, deltaZ) / 1000
+        : 0;
 
     const alert = movement > this.config.threshold;
-
-    this.platform.log.debug('Received update', {
-      alert,
-      movement,
-      accelerationX,
-      accelerationY,
-      accelerationZ,
-      deltaX,
-      deltaY,
-      deltaZ,
-    });
 
     this.accelerationX = accelerationX;
     this.accelerationY = accelerationY;
@@ -57,6 +47,18 @@ export class RuuvitagMotionService implements RuuvitagService {
     this.movement = movement;
 
     if (alert !== this.alert) {
+      this.platform.log.debug('Received motion alert', {
+        alert,
+        movement,
+        accelerationX,
+        accelerationY,
+        accelerationZ,
+        deltaX,
+        deltaY,
+        deltaZ,
+        threshold: this.config.threshold,
+      });
+
       this.alert = alert;
       this.service
         .getCharacteristic(this.platform.Characteristic.MotionDetected)

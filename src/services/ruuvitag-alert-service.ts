@@ -33,12 +33,20 @@ export class RuuvitagAlertService implements RuuvitagService {
   update(data: RuuvitagUpdate) {
     const value = data[this.config.type];
     const alert = RuuvitagAlertService.convert(
-      this.config.operator === '>'
+      this.config.operator === '<'
         ? this.config.threshold > value
         : this.config.threshold < value,
     );
 
     if (this.state.get('alert') !== alert) {
+      this.platform.log.debug(`Received ${this.config.type} alert`, {
+        value,
+        operator: this.config.operator,
+        threshold: this.config.threshold,
+        current: this.state.get('alert'),
+        new: alert,
+      });
+
       this.state.set('alert', alert);
       this.service
         .getCharacteristic(this.platform.Characteristic.ContactSensorState)
