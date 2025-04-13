@@ -30,8 +30,10 @@
           "name": "Living Room Ruuvitag",
           "id": "fb168c3611eb",
           "motion": {
-            "threshold": 0.1,
-            "name": "Wake Up"
+            "threshold": 0.01,
+            "name": "Wake Up",
+            "steps": 1,
+            "frequency": "10 seconds"
           },
           "alerts": [
             {
@@ -45,10 +47,6 @@
               "threshold": 10,
               "operator": "<",
               "name": "Low Temperature"
-            },
-            {
-              "type": "motion",
-              "threshold": 0.1
             }
           ]
         }

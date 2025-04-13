@@ -45,6 +45,18 @@
                   "type": "string",
                   "required": true,
                   "default": "Wake Up"
+                },
+                "steps": {
+                  "title": "Steps",
+                  "type": "number",
+                  "required": true,
+                  "default": 2
+                },
+                "frequency": {
+                  "title": "Frequency",
+                  "type": "string",
+                  "required": true,
+                  "default": "5 seconds"
                 }
               }
             },

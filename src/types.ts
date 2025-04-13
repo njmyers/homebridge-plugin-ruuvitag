@@ -11,6 +11,8 @@ export interface RuuvitagAlertConfig {
 export interface RuuvitagMotionAlertConfig {
   name: string;
   threshold: number;
+  steps: number;
+  frequency: string;
 }
 
 export interface RuuvitagAccessoryConfig {
