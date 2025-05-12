@@ -24,9 +24,9 @@ export class RuuvitagBatteryService implements RuuvitagService {
       .setProps({ minValue: 0, maxValue: 100, minStep: 1 });
 
     this.service
-      .getCharacteristic(this.platform.Characteristic.ConfiguredName)
+      .getCharacteristic(this.platform.Characteristic.Name)
       .onGet(() => this.name)
-      .onSet(this.setConfiguredName.bind(this));
+      .onSet(this.setName.bind(this));
   }
 
   update(data: RuuvitagUpdate) {
@@ -46,9 +46,9 @@ export class RuuvitagBatteryService implements RuuvitagService {
       .updateValue(battery < 2000 ? 1 : 0);
   }
 
-  private setConfiguredName(value: CharacteristicValue) {
+  private setName(value: CharacteristicValue) {
     if (typeof value !== 'string') {
-      this.platform.log.error('ConfiguredName is not a string');
+      this.platform.log.error('Name is not a string');
       return;
     }
 

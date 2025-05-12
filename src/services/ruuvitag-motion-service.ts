@@ -34,10 +34,25 @@ export class RuuvitagMotionService implements RuuvitagService {
         this.config.name,
       );
 
+    this.service.setCharacteristic(
+      this.platform.Characteristic.StatusActive,
+      this.StatusActive,
+    );
+
+    this.service.setCharacteristic(
+      this.platform.Characteristic.StatusFault,
+      this.StatusFault,
+    );
+
+    this.service.setCharacteristic(
+      this.platform.Characteristic.StatusTampered,
+      this.StatusTampered,
+    );
+
     this.service
-      .getCharacteristic(this.platform.Characteristic.ConfiguredName)
+      .getCharacteristic(this.platform.Characteristic.Name)
       .onGet(() => this.name)
-      .onSet(this.setConfiguredName.bind(this));
+      .onSet(this.setName.bind(this));
   }
 
   update({ accelerationX, accelerationY, accelerationZ }: RuuvitagUpdate) {
@@ -90,9 +105,21 @@ export class RuuvitagMotionService implements RuuvitagService {
     }
   }
 
-  private setConfiguredName(value: CharacteristicValue) {
+  private get StatusActive() {
+    return true;
+  }
+
+  private get StatusFault() {
+    return this.platform.Characteristic.StatusFault.NO_FAULT;
+  }
+
+  private get StatusTampered() {
+    return this.platform.Characteristic.StatusTampered.NOT_TAMPERED;
+  }
+
+  private setName(value: CharacteristicValue) {
     if (typeof value !== 'string') {
-      this.platform.log.error('ConfiguredName is not a string');
+      this.platform.log.error('Name is not a string');
       return;
     }
 

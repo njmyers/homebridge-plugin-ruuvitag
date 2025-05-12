@@ -1,4 +1,4 @@
-import type { CharacteristicValue, Service } from 'homebridge';
+import { type CharacteristicValue, type Service } from 'homebridge';
 import type { RuuvitagUpdate } from 'node-ruuvitag';
 
 import type { RuuvitagPlatform } from '../ruuvitag-platform.js';
@@ -19,14 +19,29 @@ export class RuuvitagTemperatureService implements RuuvitagService {
       this.accessory.getService(this.platform.Service.TemperatureSensor) ||
       this.accessory.addService(this.platform.Service.TemperatureSensor);
 
+    this.service.setCharacteristic(
+      this.platform.Characteristic.StatusActive,
+      this.StatusActive,
+    );
+
+    this.service.setCharacteristic(
+      this.platform.Characteristic.StatusFault,
+      this.StatusFault,
+    );
+
+    this.service.setCharacteristic(
+      this.platform.Characteristic.StatusTampered,
+      this.StatusTampered,
+    );
+
     this.service
       .getCharacteristic(this.platform.Characteristic.CurrentTemperature)
       .setProps({ minValue: -200, maxValue: 200, minStep: 0.01 });
 
     this.service
-      .getCharacteristic(this.platform.Characteristic.ConfiguredName)
+      .getCharacteristic(this.platform.Characteristic.Name)
       .onGet(() => this.name)
-      .onSet(this.setConfiguredName.bind(this));
+      .onSet(this.setName.bind(this));
   }
 
   update(data: RuuvitagUpdate) {
@@ -42,9 +57,21 @@ export class RuuvitagTemperatureService implements RuuvitagService {
       .updateValue(temperature);
   }
 
-  private setConfiguredName(value: CharacteristicValue) {
+  private get StatusActive() {
+    return true;
+  }
+
+  private get StatusFault() {
+    return this.platform.Characteristic.StatusFault.NO_FAULT;
+  }
+
+  private get StatusTampered() {
+    return this.platform.Characteristic.StatusTampered.NOT_TAMPERED;
+  }
+
+  private setName(value: CharacteristicValue) {
     if (typeof value !== 'string') {
-      this.platform.log.error('ConfiguredName is not a string');
+      this.platform.log.error('Name is not a string');
       return;
     }
 
