@@ -1,4 +1,4 @@
-import { Service } from 'homebridge';
+import { CharacteristicValue, Service } from 'homebridge';
 import { RuuvitagUpdate } from 'node-ruuvitag';
 
 import type { RuuvitagPlatform } from '../ruuvitag-platform.js';
@@ -10,6 +10,7 @@ import type { RuuvitagService } from './types.js';
 
 export class RuuvitagAlertService implements RuuvitagService {
   private service: Service;
+  private name: string;
   private state: Map<'alert' | 'value', number> = new Map([
     ['alert', 0],
     ['value', 0],
@@ -19,15 +20,22 @@ export class RuuvitagAlertService implements RuuvitagService {
     private readonly platform: RuuvitagPlatform,
     private readonly accessory: RuuvitagPlatformAccessory,
     private readonly config: RuuvitagAlertConfig,
+    private readonly id: number,
   ) {
     this.platform.log.debug(`Creating alert service: "${this.config.name}"`);
+    this.name = this.config.name;
     this.service =
-      this.accessory.getService(this.platform.Service.ContactSensor) ||
+      this.accessory.getService(this.config.name) ||
       this.accessory.addService(
         this.platform.Service.ContactSensor,
         this.config.name,
-        this.config.type,
+        this.key,
       );
+
+    this.service
+      .getCharacteristic(this.platform.Characteristic.ConfiguredName)
+      .onGet(() => this.name)
+      .onSet(this.setConfiguredName.bind(this));
   }
 
   update(data: RuuvitagUpdate) {
@@ -55,7 +63,16 @@ export class RuuvitagAlertService implements RuuvitagService {
   }
 
   get key() {
-    return `${this.config.type}-${this.config.operator}`;
+    return `${this.config.type}-${this.config.operator}-${this.id}`;
+  }
+
+  private setConfiguredName(value: CharacteristicValue) {
+    if (typeof value !== 'string') {
+      this.platform.log.error('ConfiguredName is not a string');
+      return;
+    }
+
+    this.name = value;
   }
 
   static convert(value: boolean): number {

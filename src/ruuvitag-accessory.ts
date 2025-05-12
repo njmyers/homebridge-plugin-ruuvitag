@@ -68,8 +68,13 @@ export class RuuvitagAccessory {
       return [];
     }
 
-    return config.alerts.map(alert => {
-      return new RuuvitagAlertService(this.platform, this.accessory, alert);
+    return config.alerts.map((alert, index) => {
+      return new RuuvitagAlertService(
+        this.platform,
+        this.accessory,
+        alert,
+        index + 1,
+      );
     });
   }
 

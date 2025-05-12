@@ -1,4 +1,4 @@
-import type { Service } from 'homebridge';
+import type { CharacteristicValue, Service } from 'homebridge';
 import type { RuuvitagUpdate } from 'node-ruuvitag';
 
 import type { RuuvitagPlatform } from '../ruuvitag-platform.js';
@@ -8,6 +8,7 @@ import type { RuuvitagService } from './types.js';
 export class RuuvitagHumidityService implements RuuvitagService {
   private humidity: number = 0;
   private service: Service;
+  private name = 'Humidity';
 
   constructor(
     private readonly platform: RuuvitagPlatform,
@@ -21,6 +22,11 @@ export class RuuvitagHumidityService implements RuuvitagService {
     this.service
       .getCharacteristic(this.platform.Characteristic.CurrentRelativeHumidity)
       .setProps({ minValue: 0, maxValue: 100, minStep: 0.5 });
+
+    this.service
+      .getCharacteristic(this.platform.Characteristic.ConfiguredName)
+      .onGet(() => this.name)
+      .onSet(this.setConfiguredName.bind(this));
   }
 
   update(data: RuuvitagUpdate) {
@@ -34,5 +40,14 @@ export class RuuvitagHumidityService implements RuuvitagService {
     this.service
       .getCharacteristic(this.platform.Characteristic.CurrentRelativeHumidity)
       .updateValue(humidity);
+  }
+
+  private setConfiguredName(value: CharacteristicValue) {
+    if (typeof value !== 'string') {
+      this.platform.log.error('ConfiguredName is not a string');
+      return;
+    }
+
+    this.name = value;
   }
 }

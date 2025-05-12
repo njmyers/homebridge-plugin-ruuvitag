@@ -1,4 +1,4 @@
-import type { Service } from 'homebridge';
+import type { CharacteristicValue, Service } from 'homebridge';
 import type { RuuvitagUpdate } from 'node-ruuvitag';
 import * as TimeSpeak from 'time-speak';
 import { differenceInMilliseconds } from 'date-fns';
@@ -18,12 +18,14 @@ export class RuuvitagMotionService implements RuuvitagService {
   private timestamp: Date | null = null;
   private alert: boolean = false;
   private service: Service;
+  private name: string;
 
   constructor(
     private readonly platform: RuuvitagPlatform,
     private readonly accessory: RuuvitagPlatformAccessory,
     private readonly config: RuuvitagMotionAlertConfig,
   ) {
+    this.name = config.name;
     this.platform.log.debug(`Creating motion service: "${this.config.name}"`);
     this.service =
       this.accessory.getService(this.platform.Service.MotionSensor) ||
@@ -31,6 +33,11 @@ export class RuuvitagMotionService implements RuuvitagService {
         this.platform.Service.MotionSensor,
         this.config.name,
       );
+
+    this.service
+      .getCharacteristic(this.platform.Characteristic.ConfiguredName)
+      .onGet(() => this.name)
+      .onSet(this.setConfiguredName.bind(this));
   }
 
   update({ accelerationX, accelerationY, accelerationZ }: RuuvitagUpdate) {
@@ -81,6 +88,15 @@ export class RuuvitagMotionService implements RuuvitagService {
         .getCharacteristic(this.platform.Characteristic.MotionDetected)
         .updateValue(alert);
     }
+  }
+
+  private setConfiguredName(value: CharacteristicValue) {
+    if (typeof value !== 'string') {
+      this.platform.log.error('ConfiguredName is not a string');
+      return;
+    }
+
+    this.name = value;
   }
 
   static hypotenuse(a: number, b: number, c = 0) {
