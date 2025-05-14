@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { RuuviData, RuuviData3, RuuviData5 } from './ruuvi-data';
+import { RuuviData, RuuviData3, RuuviData5 } from './ruuvi-data.js';
 
 describe('RuuviData', () => {
   describe('RuuviData5', () => {
