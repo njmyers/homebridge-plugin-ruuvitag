@@ -4,11 +4,19 @@ import { RuuviServer } from '../src/ruuvi-server.js';
 const logger = new ConsoleLogger();
 const server = new RuuviServer({ logger });
 
+server.on('warning', warning => {
+  logger.warn('Server Warning', warning);
+});
+
 server.on('found', tag => {
   logger.info('Found', tag.id);
 
   tag.on('error', error => {
     logger.error('Error', error);
+  });
+
+  tag.on('warning', warning => {
+    logger.warn('Warning', warning);
   });
 
   tag.on('update', data => {
