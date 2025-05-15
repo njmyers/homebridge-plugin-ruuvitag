@@ -24,6 +24,7 @@ export class RuuvitagInformationService {
       [this.platform.Characteristic.Model, 'Not Loaded'],
       [this.platform.Characteristic.HardwareRevision, 'Not Loaded'],
       [this.platform.Characteristic.FirmwareRevision, 'Not Loaded'],
+      [this.platform.Characteristic.SerialNumber, tag.id],
     ]);
 
     this.information =
