@@ -1,5 +1,4 @@
 import type { CharacteristicValue, Service } from 'homebridge';
-import type { RuuvitagUpdate } from 'node-ruuvitag';
 import * as TimeSpeak from 'time-speak';
 import { differenceInMilliseconds } from 'date-fns';
 
@@ -9,6 +8,7 @@ import type {
   RuuvitagPlatformAccessory,
 } from '../types.js';
 import type { RuuvitagService } from './types.js';
+import { RuuviData3, RuuviData5 } from '../ruuvi-data.js';
 
 export class RuuvitagMotionService implements RuuvitagService {
   private accelerationX: number | null = null;
@@ -55,10 +55,10 @@ export class RuuvitagMotionService implements RuuvitagService {
       .onSet(this.setName.bind(this));
   }
 
-  update({ accelerationX, accelerationY, accelerationZ }: RuuvitagUpdate) {
-    const deltaX = this.accelerationX ? this.accelerationX - accelerationX : 0;
-    const deltaY = this.accelerationY ? this.accelerationY - accelerationY : 0;
-    const deltaZ = this.accelerationZ ? this.accelerationZ - accelerationZ : 0;
+  update({ acceleration }: RuuviData3 | RuuviData5) {
+    const deltaX = this.accelerationX ? this.accelerationX - acceleration.x : 0;
+    const deltaY = this.accelerationY ? this.accelerationY - acceleration.y : 0;
+    const deltaZ = this.accelerationZ ? this.accelerationZ - acceleration.z : 0;
     const movements = [
       ...this.movements,
       RuuvitagMotionService.hypotenuse(deltaX, deltaY, deltaZ) / 1000,
@@ -67,9 +67,9 @@ export class RuuvitagMotionService implements RuuvitagService {
     const timestamp = new Date();
     const alert = movements.every(movement => movement > this.config.threshold);
 
-    this.accelerationX = accelerationX;
-    this.accelerationY = accelerationY;
-    this.accelerationZ = accelerationZ;
+    this.accelerationX = acceleration.x;
+    this.accelerationY = acceleration.y;
+    this.accelerationZ = acceleration.z;
     this.movements = movements;
 
     const frequency = RuuvitagMotionService.parse(
@@ -86,9 +86,9 @@ export class RuuvitagMotionService implements RuuvitagService {
       this.platform.log.debug('Received motion alert', {
         alert,
         movements,
-        accelerationX,
-        accelerationY,
-        accelerationZ,
+        accelerationX: acceleration.x,
+        accelerationY: acceleration.y,
+        accelerationZ: acceleration.z,
         deltaX,
         deltaY,
         deltaZ,

@@ -1,5 +1,4 @@
 import { CharacteristicValue, Service } from 'homebridge';
-import { RuuvitagUpdate } from 'node-ruuvitag';
 
 import type { RuuvitagPlatform } from '../ruuvitag-platform.js';
 import type {
@@ -7,6 +6,7 @@ import type {
   RuuvitagPlatformAccessory,
 } from '../types.js';
 import type { RuuvitagService } from './types.js';
+import { RuuviData3, RuuviData5 } from '../ruuvi-data.js';
 
 export class RuuvitagAlertService implements RuuvitagService {
   private service: Service;
@@ -53,7 +53,7 @@ export class RuuvitagAlertService implements RuuvitagService {
       .onSet(this.setName.bind(this));
   }
 
-  update(data: RuuvitagUpdate) {
+  update(data: RuuviData3 | RuuviData5) {
     const value = data[this.config.type];
     const alert = RuuvitagAlertService.convert(
       this.config.operator === '<'

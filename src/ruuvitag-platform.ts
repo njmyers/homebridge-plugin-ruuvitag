@@ -6,7 +6,8 @@ import type {
   PlatformAccessory,
   Service,
 } from 'homebridge';
-import ruuvi, { Ruuvitag } from 'node-ruuvitag';
+import { RuuviServer } from './ruuvi-server.js';
+import { RuuviTag } from './ruuvi-tag.js';
 
 import { RuuvitagAccessory } from './ruuvitag-accessory.js';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
@@ -32,6 +33,8 @@ export class RuuvitagPlatform implements DynamicPlatformPlugin {
   public readonly accessories: Accessories = new Map();
   public readonly uuids: Set<string> = new Set();
 
+  private readonly server: RuuviServer;
+
   constructor(
     public readonly log: Logging,
     public readonly config: RuuvitagPlatformConfig,
@@ -39,6 +42,9 @@ export class RuuvitagPlatform implements DynamicPlatformPlugin {
   ) {
     this.Service = api.hap.Service;
     this.Characteristic = api.hap.Characteristic;
+    this.server = new RuuviServer({
+      logger: this.log,
+    });
 
     this.log.debug('Finished initializing platform:', this.config.name);
 
@@ -68,9 +74,9 @@ export class RuuvitagPlatform implements DynamicPlatformPlugin {
    * Find all available Ruuvitags and register them as accessories.
    */
   discoverDevices() {
-    ruuvi.on('found', tag => {
+    this.server.on('found', tag => {
       this.log.info('Discovered ruuvitag:', tag.id);
-      const uuid = this.api.hap.uuid.generate(tag.id);
+      const uuid = this.api.hap.uuid.generate(`${tag.id}-test`);
 
       if (this.accessories.has(uuid)) {
         this.restoreAccessory(uuid, tag);
@@ -82,18 +88,17 @@ export class RuuvitagPlatform implements DynamicPlatformPlugin {
     });
   }
 
-  private restoreAccessory(uuid: string, tag: Ruuvitag) {
+  private restoreAccessory(uuid: string, tag: RuuviTag) {
     const config = this.config.accessories.find(a => a.id === tag.id);
     const accessory = this.accessories.get(uuid)!;
     this.log.info('Restoring accessory from cache:', accessory.displayName);
 
-    accessory.context.device = tag;
     accessory.context.config = config;
 
-    new RuuvitagAccessory(this, accessory);
+    new RuuvitagAccessory(this, accessory, tag);
   }
 
-  private createAccessory(uuid: string, tag: Ruuvitag) {
+  private createAccessory(uuid: string, tag: RuuviTag) {
     const config = this.config.accessories.find(a => a.id === tag.id);
 
     if (!config) {
@@ -111,9 +116,8 @@ export class RuuvitagPlatform implements DynamicPlatformPlugin {
       accessory,
     ]);
 
-    accessory.context.device = tag;
     accessory.context.config = config;
 
-    new RuuvitagAccessory(this, accessory);
+    new RuuvitagAccessory(this, accessory, tag);
   }
 }

@@ -1,9 +1,9 @@
 import type { CharacteristicValue, Service } from 'homebridge';
-import type { RuuvitagUpdate } from 'node-ruuvitag';
 
 import type { RuuvitagPlatform } from '../ruuvitag-platform.js';
 import type { RuuvitagPlatformAccessory } from '../types.js';
 import type { RuuvitagService } from './types.js';
+import { RuuviData3, RuuviData5 } from '../ruuvi-data.js';
 
 export class RuuvitagHumidityService implements RuuvitagService {
   private humidity: number = 0;
@@ -44,7 +44,7 @@ export class RuuvitagHumidityService implements RuuvitagService {
       .onSet(this.setName.bind(this));
   }
 
-  update(data: RuuvitagUpdate) {
+  update(data: RuuviData3 | RuuviData5) {
     const { humidity } = data;
 
     if (humidity === this.humidity) {
