@@ -1,4 +1,3 @@
-import type { RuuvitagUpdate } from 'node-ruuvitag';
 import type { RuuvitagPlatform } from './ruuvitag-platform.js';
 import type { RuuvitagPlatformAccessory } from './types.js';
 
@@ -8,6 +7,9 @@ import { RuuvitagBatteryService } from './services/ruuvitag-battery-service.js';
 import { RuuvitagAlertService } from './services/ruuvitag-alert-service.js';
 import { RuuvitagService } from './services/types.js';
 import { RuuvitagMotionService } from './services/ruuvitag-motion-service.js';
+import { RuuviData3, RuuviData5 } from './ruuvi-data.js';
+import { RuuvitagInformationService } from './services/ruuvitag-information-service.js';
+import { RuuviTag } from './ruuvi-tag.js';
 
 /**
  * Platform Accessory
@@ -17,30 +19,22 @@ import { RuuvitagMotionService } from './services/ruuvitag-motion-service.js';
 export class RuuvitagAccessory {
   private services: RuuvitagService[] = [];
   private alerts: RuuvitagAlertService[] = [];
+  private information: RuuvitagInformationService;
 
   constructor(
     private readonly platform: RuuvitagPlatform,
     private readonly accessory: RuuvitagPlatformAccessory,
+    private readonly ruuvitag: RuuviTag,
   ) {
     this.platform.log.debug('Creating accessory', accessory.displayName);
-    this.accessory.context.device.on('updated', data => this.update(data));
-    this.setAccessoryInformation();
-    this.services = this.createServices();
+    this.ruuvitag.on('update', data => this.update(data));
     this.alerts = this.createAlerts();
-  }
-
-  setAccessoryInformation() {
-    this.accessory
-      .getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(
-        this.platform.Characteristic.Manufacturer,
-        'Ruuvi Innovations Ltd.',
-      )
-      .setCharacteristic(this.platform.Characteristic.Model, 'RuuviTag B')
-      .setCharacteristic(
-        this.platform.Characteristic.SerialNumber,
-        'Default-Serial',
-      );
+    this.services = this.createServices();
+    this.information = new RuuvitagInformationService(
+      this.platform,
+      this.accessory,
+      ruuvitag,
+    );
   }
 
   createServices(): RuuvitagService[] {
@@ -78,7 +72,7 @@ export class RuuvitagAccessory {
     });
   }
 
-  update(data: RuuvitagUpdate) {
+  update(data: RuuviData3 | RuuviData5) {
     this.alerts.forEach(alert => {
       alert.update(data);
     });
