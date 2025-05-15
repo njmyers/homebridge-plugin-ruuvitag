@@ -34,6 +34,7 @@ export class RuuvitagPlatform implements DynamicPlatformPlugin {
   public readonly uuids: Set<string> = new Set();
 
   private readonly server: RuuviServer;
+  private static readonly ENV = 'production';
 
   constructor(
     public readonly log: Logging,
@@ -76,7 +77,9 @@ export class RuuvitagPlatform implements DynamicPlatformPlugin {
   discoverDevices() {
     this.server.on('found', tag => {
       this.log.info('Discovered ruuvitag:', tag.id);
-      const uuid = this.api.hap.uuid.generate(`${tag.id}-test`);
+      const uuid = this.api.hap.uuid.generate(
+        `${tag.id}-${RuuvitagPlatform.ENV}`,
+      );
 
       if (this.accessories.has(uuid)) {
         this.restoreAccessory(uuid, tag);

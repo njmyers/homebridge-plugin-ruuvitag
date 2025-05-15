@@ -122,9 +122,8 @@ export class RuuviData5 implements RuuviData5Input {
           ? txPower
           : 0,
       battery:
-        battery >= RuuviData5.MIN_VOLTAGE &&
-        battery < RuuviData5.MAX_VOLTAGE
-          ? battery / 1000
+        battery >= RuuviData5.MIN_VOLTAGE && battery < RuuviData5.MAX_VOLTAGE
+          ? battery
           : NaN,
     };
   }
@@ -155,9 +154,7 @@ export class RuuviData5 implements RuuviData5Input {
     const accelerationY = RuuviData5.parseAcceleration(data.readInt16BE(9));
     const accelerationZ = RuuviData5.parseAcceleration(data.readInt16BE(11));
 
-    const { battery, txPower } = RuuviData5.parseTxPower(
-      data.readUInt16BE(13),
-    );
+    const { battery, txPower } = RuuviData5.parseTxPower(data.readUInt16BE(13));
 
     const movementCounter = RuuviData5.parseMovementCounter(data[15]);
     const sequence = RuuviData5.parseSequence(data.readUInt16BE(16));
@@ -256,10 +253,10 @@ export class RuuviData3 implements RuuviData3Input {
       : data / 1000;
   }
 
-  static parsebattery(battery: number): number {
+  static parseBattery(battery: number): number {
     return battery >= RuuviData3.MIN_VOLTAGE &&
       battery <= RuuviData3.MAX_VOLTAGE
-      ? battery / 1000
+      ? battery
       : NaN;
   }
 
@@ -275,9 +272,7 @@ export class RuuviData3 implements RuuviData3Input {
     const accelerationY = RuuviData3.parseAcceleration(data.readInt16BE(8));
     const accelerationZ = RuuviData3.parseAcceleration(data.readInt16BE(10));
 
-    const battery = RuuviData3.parsebattery(
-      data.readUInt16BE(12),
-    );
+    const battery = RuuviData3.parseBattery(data.readUInt16BE(12));
 
     return new RuuviData3({
       dataFormat: RuuviData3.DATA_FORMAT,
