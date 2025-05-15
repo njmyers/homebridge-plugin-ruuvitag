@@ -28,7 +28,7 @@ export interface RuuviData5Input {
   humidity: number;
   pressure: number;
   acceleration: RuuviAccelerationData;
-  batteryVoltage: number;
+  battery: number;
   movementCounter: number;
   sequence: number;
   mac: string | null;
@@ -41,7 +41,7 @@ export class RuuviData5 implements RuuviData5Input {
   humidity: number;
   pressure: number;
   acceleration: RuuviAccelerationData;
-  batteryVoltage: number;
+  battery: number;
   movementCounter: number;
   sequence: number;
   mac: string | null;
@@ -53,7 +53,7 @@ export class RuuviData5 implements RuuviData5Input {
     humidity,
     pressure,
     acceleration,
-    batteryVoltage,
+    battery,
     movementCounter,
     sequence,
     mac,
@@ -64,7 +64,7 @@ export class RuuviData5 implements RuuviData5Input {
     this.humidity = humidity;
     this.pressure = pressure;
     this.acceleration = acceleration;
-    this.batteryVoltage = batteryVoltage;
+    this.battery = battery;
     this.movementCounter = movementCounter;
     this.sequence = sequence;
     this.mac = mac;
@@ -110,10 +110,10 @@ export class RuuviData5 implements RuuviData5Input {
   }
 
   static parseTxPower(power: number): {
-    batteryVoltage: number;
+    battery: number;
     txPower: number;
   } {
-    const batteryVoltage = (power >> 5) + 1600;
+    const battery = (power >> 5) + 1600;
     const txPower = (power & 0b11111) * 2 - 40; // dBm
 
     return {
@@ -121,10 +121,10 @@ export class RuuviData5 implements RuuviData5Input {
         txPower >= RuuviData5.MIN_POWER && txPower < RuuviData5.MAX_POWER
           ? txPower
           : 0,
-      batteryVoltage:
-        batteryVoltage >= RuuviData5.MIN_VOLTAGE &&
-        batteryVoltage < RuuviData5.MAX_VOLTAGE
-          ? batteryVoltage / 1000
+      battery:
+        battery >= RuuviData5.MIN_VOLTAGE &&
+        battery < RuuviData5.MAX_VOLTAGE
+          ? battery / 1000
           : NaN,
     };
   }
@@ -155,7 +155,7 @@ export class RuuviData5 implements RuuviData5Input {
     const accelerationY = RuuviData5.parseAcceleration(data.readInt16BE(9));
     const accelerationZ = RuuviData5.parseAcceleration(data.readInt16BE(11));
 
-    const { batteryVoltage, txPower } = RuuviData5.parseTxPower(
+    const { battery, txPower } = RuuviData5.parseTxPower(
       data.readUInt16BE(13),
     );
 
@@ -173,7 +173,7 @@ export class RuuviData5 implements RuuviData5Input {
         y: accelerationY,
         z: accelerationZ,
       },
-      batteryVoltage,
+      battery,
       txPower,
       movementCounter,
       sequence,
@@ -188,7 +188,7 @@ export interface RuuviData3Input {
   humidity: number;
   pressure: number;
   acceleration: RuuviAccelerationData;
-  batteryVoltage: number;
+  battery: number;
 }
 
 export class RuuviData3 implements RuuviData3Input {
@@ -197,7 +197,7 @@ export class RuuviData3 implements RuuviData3Input {
   pressure: number;
   humidity: number;
   acceleration: RuuviAccelerationData;
-  batteryVoltage: number;
+  battery: number;
 
   constructor({
     dataFormat,
@@ -205,14 +205,14 @@ export class RuuviData3 implements RuuviData3Input {
     humidity,
     pressure,
     acceleration,
-    batteryVoltage,
+    battery,
   }: RuuviData3Input) {
     this.dataFormat = dataFormat;
     this.temperature = temperature;
     this.humidity = humidity;
     this.pressure = pressure;
     this.acceleration = acceleration;
-    this.batteryVoltage = batteryVoltage;
+    this.battery = battery;
   }
 
   static DATA_FORMAT = 3;
@@ -256,10 +256,10 @@ export class RuuviData3 implements RuuviData3Input {
       : data / 1000;
   }
 
-  static parseBatteryVoltage(batteryVoltage: number): number {
-    return batteryVoltage >= RuuviData3.MIN_VOLTAGE &&
-      batteryVoltage <= RuuviData3.MAX_VOLTAGE
-      ? batteryVoltage / 1000
+  static parsebattery(battery: number): number {
+    return battery >= RuuviData3.MIN_VOLTAGE &&
+      battery <= RuuviData3.MAX_VOLTAGE
+      ? battery / 1000
       : NaN;
   }
 
@@ -275,7 +275,7 @@ export class RuuviData3 implements RuuviData3Input {
     const accelerationY = RuuviData3.parseAcceleration(data.readInt16BE(8));
     const accelerationZ = RuuviData3.parseAcceleration(data.readInt16BE(10));
 
-    const batteryVoltage = RuuviData3.parseBatteryVoltage(
+    const battery = RuuviData3.parsebattery(
       data.readUInt16BE(12),
     );
 
@@ -289,7 +289,7 @@ export class RuuviData3 implements RuuviData3Input {
         y: accelerationY,
         z: accelerationZ,
       },
-      batteryVoltage,
+      battery,
     });
   }
 }

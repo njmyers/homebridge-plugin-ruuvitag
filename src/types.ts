@@ -1,5 +1,5 @@
 import type { PlatformAccessory, PlatformConfig } from 'homebridge';
-import type { Ruuvitag } from 'node-ruuvitag';
+import type { RuuviTag } from './ruuvi-tag.js';
 
 export interface RuuvitagAlertConfig {
   name: string;
@@ -27,7 +27,7 @@ export interface RuuvitagPlatformConfig extends PlatformConfig {
 }
 
 export interface RuuvitagAccessoryContext {
-  device: Ruuvitag;
+  device: RuuviTag;
   config?: RuuvitagAccessoryConfig;
 }
 

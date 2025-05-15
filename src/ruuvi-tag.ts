@@ -15,6 +15,7 @@ export interface RuuviTagInput {
 export interface RuuviTagEvents {
   update: [data: RuuviData3 | RuuviData5];
   error: [error: unknown];
+  warning: [warning: unknown];
   firmware: [firmware: string];
   hardware: [hardware: string];
   model: [model: string];
@@ -27,9 +28,8 @@ export class RuuviTag extends EventEmitter<RuuviTagEvents> {
   address: string;
   addressType: string;
   connectable: boolean;
-  
+
   #peripheral: Peripheral;
-  #connected = false;
   #logger: Logger;
   #characteristics: Map<string, boolean> = new Map([
     ['firmware', false],
@@ -43,6 +43,7 @@ export class RuuviTag extends EventEmitter<RuuviTagEvents> {
   private static HARDWARE_REVISION_UUID = '2a27';
   private static MODEL_NUMBER_UUID = '2a24';
   private static MANUFACTURER_NAME_UUID = '2a29';
+  private static RETRY_TIMEOUT = 1000;
 
   constructor({
     id,
@@ -63,31 +64,35 @@ export class RuuviTag extends EventEmitter<RuuviTagEvents> {
 
     this.on('firmware', () => {
       this.#characteristics.set('firmware', true);
-      this.disconnect();
+      this.finish();
     });
 
     this.on('hardware', () => {
       this.#characteristics.set('hardware', true);
-      this.disconnect();
+      this.finish();
     });
 
     this.on('model', () => {
       this.#characteristics.set('model', true);
-      this.disconnect();
+      this.finish();
     });
 
     this.on('manufacturer', () => {
       this.#characteristics.set('manufacturer', true);
-      this.disconnect();
+      this.finish();
+    });
+
+    this.#peripheral.on('warning', (warning: unknown) => {
+      this.emit('warning', warning);
+    });
+
+    this.#peripheral.on('error', (error: unknown) => {
+      this.emit('error', error);
     });
 
     this.#peripheral.on('connect', () => {
-      this.#logger.info('Discovering Services for RuuviTag', { id: this.id });
-      this.#connected = true;
-
-      if (this.loaded) {
-        this.disconnect();
-      }
+      this.#logger.debug('Connected to RuuviTag', { id: this.id });
+      this.finish();
 
       this.#peripheral.discoverSomeServicesAndCharacteristics(
         [RuuviTag.DEVICE_INFORMATION_SERVICE_UUID],
@@ -133,11 +138,14 @@ export class RuuviTag extends EventEmitter<RuuviTagEvents> {
     });
 
     this.#peripheral.on('disconnect', () => {
-      this.#connected = false;
-      this.#logger.info('Disconnected from RuuviTag', { id: this.id });
+      this.#logger.debug('Disconnected from RuuviTag', { id: this.id });
 
       if (!this.loaded) {
-        this.connect();
+        return setTimeout(() => {
+          this.connect();
+        }, RuuviTag.RETRY_TIMEOUT);
+      } else {
+        this.emit('disconnect');
       }
     });
   }
@@ -147,20 +155,19 @@ export class RuuviTag extends EventEmitter<RuuviTagEvents> {
   }
 
   disconnect() {
-    if (this.loaded) {
-      return this.#peripheral.disconnect(() => {
-        this.#connected = false;
-        this.emit('disconnect');
-      });
-    }
+    this.#logger.debug('Disconnecting from RuuviTag', { id: this.id });
+    this.#peripheral.disconnect();
+  }
 
-    if (!this.#connected) {
-      return this.#peripheral.connect();
+  finish() {
+    if (this.loaded) {
+      this.#logger.debug('All Data Loaded from RuuviTag', { id: this.id });
+      this.disconnect();
     }
   }
 
   connect() {
-    this.#logger.info('Connecting to RuuviTag', { id: this.id });
+    this.#logger.debug('Connecting to RuuviTag', { id: this.id });
     this.#peripheral.connect();
   }
 

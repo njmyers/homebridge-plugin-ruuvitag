@@ -58,6 +58,8 @@ export class RuuviServer extends EventEmitter<RuuviServerEvents> {
         tag.once('disconnect', () => {
           this.start();
         });
+      } else {
+        this.start();
       }
     });
 
@@ -91,11 +93,16 @@ export class RuuviServer extends EventEmitter<RuuviServerEvents> {
     noble.startScanning([], true);
   }
 
-  stop() {
+  stop(callback?: () => void) {
     if (!this.#scanning) {
       return;
     }
     this.#scanning = false;
+
+    if (callback) {
+      noble.once('scanStop', callback);
+    }
+
     noble.stopScanning();
   }
 
