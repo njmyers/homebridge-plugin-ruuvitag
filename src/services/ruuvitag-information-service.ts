@@ -47,12 +47,14 @@ export class RuuvitagInformationService {
       .getCharacteristic(this.platform.Characteristic.HardwareRevision)
       .onGet(() => this.HardwareRevision);
 
-    this.tag.on('firmware', firmware => this.setFirmwareRevision(firmware));
-    this.tag.on('manufacturer', manufacturer =>
-      this.setManufacturer(manufacturer),
-    );
-    this.tag.on('hardware', hardware => this.setHardwareRevision(hardware));
-    this.tag.on('model', model => this.setModel(model));
+    this.information
+      .getCharacteristic(this.platform.Characteristic.SerialNumber)
+      .onGet(() => this.SerialNumber);
+
+    this.tag.on('firmware', data => this.setFirmwareRevision(data));
+    this.tag.on('manufacturer', data => this.setManufacturer(data));
+    this.tag.on('hardware', data => this.setHardwareRevision(data));
+    this.tag.on('model', data => this.setModel(data));
   }
 
   private get FirmwareRevision(): CharacteristicValue {
@@ -69,6 +71,10 @@ export class RuuvitagInformationService {
 
   private get HardwareRevision(): CharacteristicValue {
     return this.state.get(this.platform.Characteristic.HardwareRevision)!;
+  }
+
+  private get SerialNumber(): CharacteristicValue {
+    return this.state.get(this.platform.Characteristic.SerialNumber)!;
   }
 
   private setFirmwareRevision(firmware: string) {
