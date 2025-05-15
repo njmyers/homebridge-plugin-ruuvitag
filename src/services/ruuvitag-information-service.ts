@@ -20,10 +20,10 @@ export class RuuvitagInformationService {
     private readonly tag: RuuviTag,
   ) {
     this.state = new Map([
-      [this.platform.Characteristic.Manufacturer, ''],
-      [this.platform.Characteristic.Model, ''],
-      [this.platform.Characteristic.HardwareRevision, ''],
-      [this.platform.Characteristic.FirmwareRevision, ''],
+      [this.platform.Characteristic.Manufacturer, 'Not Loaded'],
+      [this.platform.Characteristic.Model, 'Not Loaded'],
+      [this.platform.Characteristic.HardwareRevision, 'Not Loaded'],
+      [this.platform.Characteristic.FirmwareRevision, 'Not Loaded'],
     ]);
 
     this.information =
