@@ -1,7 +1,7 @@
 {
   "bridge": {
     "name": "PluginTemplate",
-    "username": "AA:BB:CC:DD:EE:FF",
+    "username": "AB:BB:CC:DD:EE:FF",
     "port": 51826,
     "pin": "031-45-154"
   },
@@ -20,7 +20,7 @@
       "lang": "auto",
       "sudo": false,
       "platform": "config",
-      "debug": false
+      "debug": true
     },
     {
       "name": "@njmyers/homebridge-plugin-ruuvitag-v2",
