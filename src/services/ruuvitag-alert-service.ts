@@ -10,7 +10,7 @@ import { RuuviData3, RuuviData5 } from '../ruuvi-data.js';
 
 export class RuuvitagAlertService implements RuuvitagService {
   private service: Service;
-  private name: string;
+  private ConfiguredName: string;
   private state: Map<'alert' | 'value', number> = new Map([
     ['alert', 0],
     ['value', 0],
@@ -23,14 +23,19 @@ export class RuuvitagAlertService implements RuuvitagService {
     private readonly id: number,
   ) {
     this.platform.log.debug(`Creating alert service: "${this.config.name}"`);
-    this.name = this.config.name;
+    this.ConfiguredName = this.config.name;
     this.service =
-      this.accessory.getService(this.config.name) ||
+      this.accessory.getService(this.Name) ||
       this.accessory.addService(
         this.platform.Service.ContactSensor,
-        this.config.name,
-        this.key,
+        this.Name,
+        this.Subtype,
       );
+
+    this.service.setCharacteristic(
+      this.platform.Characteristic.Name,
+      this.Name,
+    );
 
     this.service.setCharacteristic(
       this.platform.Characteristic.StatusActive,
@@ -48,9 +53,9 @@ export class RuuvitagAlertService implements RuuvitagService {
     );
 
     this.service
-      .getCharacteristic(this.platform.Characteristic.Name)
-      .onGet(() => this.name)
-      .onSet(this.setName.bind(this));
+      .getCharacteristic(this.platform.Characteristic.ConfiguredName)
+      .onGet(() => this.ConfiguredName)
+      .onSet(this.setConfiguredName.bind(this));
   }
 
   update(data: RuuviData3 | RuuviData5) {
@@ -77,7 +82,11 @@ export class RuuvitagAlertService implements RuuvitagService {
     }
   }
 
-  get key() {
+  get Name() {
+    return this.config.name;
+  }
+
+  get Subtype() {
     return `${this.config.type}-${this.config.operator}-${this.id}`;
   }
 
@@ -93,13 +102,16 @@ export class RuuvitagAlertService implements RuuvitagService {
     return this.platform.Characteristic.StatusTampered.NOT_TAMPERED;
   }
 
-  private setName(value: CharacteristicValue) {
+  private setConfiguredName(value: CharacteristicValue) {
     if (typeof value !== 'string') {
       this.platform.log.error('Name is not a string');
       return;
     }
 
-    this.name = value;
+    this.ConfiguredName = value;
+    this.service
+      .getCharacteristic(this.platform.Characteristic.ConfiguredName)
+      .updateValue(value);
   }
 
   static convert(value: boolean): number {

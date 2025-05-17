@@ -30,6 +30,7 @@ export class RuuviServer extends EventEmitter<RuuviServerEvents> {
 
       if (this.#isRuuviManufacturer(manufacturerData)) {
         const id = peripheral.id;
+        this.#logger.debug('Found RuuviTag', { id });
 
         if (!this.#tags.has(id)) {
           const tag = new RuuviTag({
@@ -90,6 +91,7 @@ export class RuuviServer extends EventEmitter<RuuviServerEvents> {
       return;
     }
     this.#scanning = true;
+    this.#logger.info('Starting RuuviTag Scanning');
     noble.startScanning([], true);
   }
 
