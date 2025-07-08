@@ -11,6 +11,7 @@ export interface RuuviServerEvents {
 
 export interface RuuviServerInput {
   logger: Logger;
+  information: boolean;
 }
 
 export class RuuviServer extends EventEmitter<RuuviServerEvents> {
@@ -19,11 +20,13 @@ export class RuuviServer extends EventEmitter<RuuviServerEvents> {
   #scanning = false;
   #tags: Map<string, RuuviTag> = new Map();
   #logger: Logger;
+  #information: boolean;
 
-  constructor({ logger }: RuuviServerInput) {
+  constructor({ logger, information }: RuuviServerInput) {
     super();
 
     this.#logger = logger;
+    this.#information = information;
 
     noble.on('discover', peripheral => {
       const { manufacturerData } = peripheral.advertisement;
@@ -39,6 +42,7 @@ export class RuuviServer extends EventEmitter<RuuviServerEvents> {
             addressType: peripheral.addressType,
             connectable: peripheral.connectable,
             peripheral,
+            information,
             logger: this.#logger,
           });
 
@@ -54,7 +58,7 @@ export class RuuviServer extends EventEmitter<RuuviServerEvents> {
     noble.on('scanStop', () => {
       const tag = Array.from(this.#tags.values()).find(tag => !tag.loaded);
 
-      if (tag) {
+      if (tag && this.#information) {
         tag.connect();
         tag.once('disconnect', () => {
           this.start();

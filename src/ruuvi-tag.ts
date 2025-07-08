@@ -8,6 +8,7 @@ export interface RuuviTagInput {
   address: string;
   addressType: string;
   connectable: boolean;
+  information: boolean;
   peripheral: Peripheral;
   logger: Logger;
 }
@@ -28,6 +29,7 @@ export class RuuviTag extends EventEmitter<RuuviTagEvents> {
   address: string;
   addressType: string;
   connectable: boolean;
+  information: boolean;
 
   #peripheral: Peripheral;
   #logger: Logger;
@@ -52,6 +54,7 @@ export class RuuviTag extends EventEmitter<RuuviTagEvents> {
     connectable,
     peripheral,
     logger,
+    information,
   }: RuuviTagInput) {
     super();
 
@@ -61,6 +64,7 @@ export class RuuviTag extends EventEmitter<RuuviTagEvents> {
     this.connectable = connectable;
     this.#peripheral = peripheral;
     this.#logger = logger;
+    this.information = information;
 
     this.on('firmware', () => {
       this.#characteristics.set('firmware', true);
@@ -151,7 +155,9 @@ export class RuuviTag extends EventEmitter<RuuviTagEvents> {
   }
 
   get loaded() {
-    return [...this.#characteristics.values()].every(v => v);
+    return this.information
+      ? [...this.#characteristics.values()].every(v => v)
+      : true;
   }
 
   disconnect() {

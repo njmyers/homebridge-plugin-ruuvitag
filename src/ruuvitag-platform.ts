@@ -45,6 +45,7 @@ export class RuuvitagPlatform implements DynamicPlatformPlugin {
     this.Characteristic = api.hap.Characteristic;
     this.server = new RuuviServer({
       logger: this.log,
+      information: this.config.accessories.some(a => a.information),
     });
 
     this.log.debug('Finished initializing platform:', this.config.name);

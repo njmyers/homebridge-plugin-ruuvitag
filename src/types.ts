@@ -18,6 +18,7 @@ export interface RuuvitagMotionAlertConfig {
 export interface RuuvitagAccessoryConfig {
   name: string;
   id: string;
+  information: boolean;
   alerts: RuuvitagAlertConfig[];
   motion: RuuvitagMotionAlertConfig;
 }
