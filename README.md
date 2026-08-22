@@ -10,17 +10,6 @@
 
 </span>
 
-> [!IMPORTANT] > **Homebridge v2.0 Information**
->
-> This template currently has a
->
-> - `package.json -> engines.homebridge` value of `"^1.8.0 || ^2.0.0-beta.0"`
-> - `package.json -> devDependencies.homebridge` value of `"^2.0.0-beta.0"`
->
-> This is to ensure that your plugin will build and run on both Homebridge v1 and v2.
->
-> Once Homebridge v2.0 has been released, you can remove the `-beta.0` in both places.
-
 ---
 
 This is a template Homebridge dynamic platform plugin and can be used as a base to help you get started developing your own plugin.
@@ -39,7 +28,7 @@ Click the link below to create a new GitHub Repository using this template, or c
 
 ### Setup Development Environment
 
-To develop Homebridge plugins you must have Node.js 18 or later installed, and a modern code editor such as [VS Code](https://code.visualstudio.com/). This plugin template uses [TypeScript](https://www.typescriptlang.org/) to make development easier and comes with pre-configured settings for [VS Code](https://code.visualstudio.com/) and ESLint. If you are using VS Code install these extensions:
+To develop Homebridge plugins you must have Node.js 22 or later installed, and a modern code editor such as [VS Code](https://code.visualstudio.com/). This plugin template uses [TypeScript](https://www.typescriptlang.org/) to make development easier and comes with pre-configured settings for [VS Code](https://code.visualstudio.com/) and ESLint. If you are using VS Code install these extensions:
 
 - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 
@@ -199,7 +188,7 @@ For reference, the current criteria are:
   - The plugin must be published to NPM and the source code available on a GitHub repository, with issues enabled.
   - A GitHub release should be created for every new version of your plugin, with release notes.
 - **Environment**
-  - The plugin must run on all [supported LTS versions of Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js), at the time of writing this is Node v18, v20 and v22.
+  - The plugin must run on all [supported LTS versions of Node.js](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js), at the time of writing this is Node v22, v24 and v26.
   - The plugin must successfully install and not start unless it is configured.
   - The plugin must not execute post-install scripts that modify the users' system in any way.
   - The plugin must not require the user to run Homebridge in a TTY or with non-standard startup parameters, even for initial configuration.
